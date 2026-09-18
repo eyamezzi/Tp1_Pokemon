@@ -1,6 +1,6 @@
-# Tp1_Pokemon
+#  Tp1_Pokemon
 
-Projet réalisé dans le cadre du TP n°1 — *Introduction à la programmation orientée objet en C++*.
+Projet réalisé dans le cadre du TP n°1 — *Introduction à la programmation orientée objet en C++* (IS_3436, ENSEA, 3ᵉ année IS, Hiver 2025-2026).
 
 Ce projet implémente un **sélecteur de Pokémon** en C++17 avec le framework **SFML**, ainsi qu'un moteur de jeu basé sur le **design pattern State**.
 
@@ -11,8 +11,6 @@ Ce projet implémente un **sélecteur de Pokémon** en C++17 avec le framework *
 - [Architecture](#architecture)
 - [Prérequis](#prérequis)
 - [Installation](#installation)
-- [Compilation](#compilation)
-- [Utilisation](#utilisation)
 - [Structure du projet](#structure-du-projet)
 - [Auteurs](#auteurs)
 
@@ -45,64 +43,57 @@ Le projet suit une architecture orientée objet avec :
 - Pattern **Singleton** pour `Pokedex`.
 - Pattern **State** pour le moteur de jeu (chaque état du jeu est une classe implémentant une interface commune).
 
-## Prérequis
+## 🧰 Prérequis
 
-- Un compilateur C++ supportant le standard **C++17**
+- Un compilateur C++ supportant le standard **C++17** (MinGW / MSVC via Visual Studio)
 - **CMake** ≥ 3.21
 - **SFML** (graphics, window, system, audio)
+- **CLion** ou **Visual Studio** (recommandés sous Windows)
 
-## Installation
+## 📥 Installation
 
-Cloner le dépôt :
+### 1. Installer SFML sous Windows
 
-\`\`\`bash
-git clone https://github.com/Nicolas-Lizandre/Tp1_Pokemon.git
+### 2. Cloner le dépôt
+
+```bash
+git clone https://github.com/eyamezzi/Tp1_Pokemon.git
 cd Tp1_Pokemon
-\`\`\`
-
-## Compilation
-
-\`\`\`bash
-mkdir build && cd build
-cmake ..
-make
-\`\`\`
-
-## Utilisation
-
-\`\`\`bash
-./Tp1_Pokemon
-\`\`\`
-
-<!-- TODO: précisez ici si le jeu se lance en mode texte, graphique, ou les deux -->
+```
 
 
-## Structure du projet
+## 📁 Structure du projet
 
-\`\`\`
+```
 Tp1_Pokemon/
-├── CMakeLists.txt
-├── main.cpp
-├── include/
-│   ├── Pokemon.hpp
-│   ├── Pokemon_Vector.hpp
-│   ├── Pokedex.hpp
-│   ├── Pokemon_Party.hpp
-│   ├── Pokemon_Attack.hpp
-│   └── States/
-├── src/
-│   ├── Pokemon.cpp
-│   ├── Pokedex.cpp
-│   ├── Pokemon_Party.cpp
-│   ├── Pokemon_Attack.cpp
-│   └── States/
-├── assets/
-│   └── (images des Pokémon, Pokedex.csv)
-└── README.md
-\`\`\`
+│
+├── 📄 CMakeLists.txt
+├── 📄 main.cpp
+├── 📄 README.md
+│
+├── 📂 include/
+│   ├── 📝 Pokemon.hpp
+│   ├── 📝 Pokemon_Vector.hpp
+│   ├── 📝 Pokedex.hpp
+│   ├── 📝 Pokemon_Party.hpp
+│   ├── 📝 Pokemon_Attack.hpp
+│   └── 📂 States/
+│
+├── 📂 src/
+│   ├── 🧩 Pokemon.cpp
+│   ├── 🧩 Pokedex.cpp
+│   ├── 🧩 Pokemon_Party.cpp
+│   ├── 🧩 Pokemon_Attack.cpp
+│   └── 📂 States/
+│
+└── 📂 assets/
+    ├── 🖼️ (images des Pokémon)
+    └── 📊 Pokedex.csv
+```
 
-<!-- TODO: adaptez cette arborescence à celle réellement présente dans votre dépôt -->
+## 👤 Auteurs
 
-## Auteurs
+- **Eya Mezzi**
 
-- **Eya Mezzi*
+---
+
