@@ -68,27 +68,27 @@ cd Tp1_Pokemon
 Tp1_Pokemon/
 │
 ├── 📄 CMakeLists.txt
-├── 📄 main.cpp
 ├── 📄 README.md
+├── 🗜️ image_pokedex-20260914.zip
 │
-├── 📂 include/
+├── 📂 Inc/
 │   ├── 📝 Pokemon.hpp
 │   ├── 📝 Pokemon_Vector.hpp
 │   ├── 📝 Pokedex.hpp
 │   ├── 📝 Pokemon_Party.hpp
-│   ├── 📝 Pokemon_Attack.hpp
-│   └── 📂 States/
+│   └── 📝 Pokemon_Attack.hpp
 │
-├── 📂 src/
+├── 📂 Src/
+│   ├── 🧩 main.cpp
 │   ├── 🧩 Pokemon.cpp
 │   ├── 🧩 Pokedex.cpp
 │   ├── 🧩 Pokemon_Party.cpp
-│   ├── 🧩 Pokemon_Attack.cpp
-│   └── 📂 States/
+│   └── 🧩 Pokemon_Attack.cpp
 │
-└── 📂 assets/
-    ├── 🖼️ (images des Pokémon)
-    └── 📊 Pokedex.csv
+└── 📂 image_pokedex-20260914/
+    └── 📂 pokemon/
+        ├── 🖼️ (images des Pokémon)
+        └── 📊 Pokedex.csv
 ```
 
 ## 👤 Auteurs
