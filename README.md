@@ -1,6 +1,6 @@
 #  Tp1_Pokemon
 
-Projet réalisé dans le cadre du TP n°1 — *Introduction à la programmation orientée objet en C++* (IS_3436, ENSEA, 3ᵉ année IS, Hiver 2025-2026).
+Projet réalisé dans le cadre du TP n°1 — *Introduction à la programmation orientée objet en C++*.
 
 Ce projet implémente un **sélecteur de Pokémon** en C++17 avec le framework **SFML**, ainsi qu'un moteur de jeu basé sur le **design pattern State**.
 
