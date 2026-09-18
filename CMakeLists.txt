@@ -12,12 +12,14 @@ add_executable(Tp1
         src/main.cpp
         Src/Pokemon.cpp
         Inc/Pokemon.h
-        Src/PockemonVector.cpp
-        Inc/PockemonVector.h
+        Src/PokemonVector.cpp
+        Inc/PokemonVector.h
         Src/Pokedex.cpp
         Inc/Pokedex.h
         Src/Pokemon_Party.cpp
         Inc/Pokemon_Party.h
+        Src/Pokemon_Attack.cpp
+        Inc/Pokemon_Attack.h
 )
 target_link_libraries(Tp1
         sfml-system

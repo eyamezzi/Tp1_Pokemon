@@ -7,11 +7,11 @@
 #include <iostream>
 
 void PokemonParty::ajouterPokemon(const Pokemon& p) {
-    liste.push_back(p);
+     getListePokemons().push_back(p);
 }
 
 Pokemon* PokemonParty::getPokemonByNumero(int numero) {
-    for (auto& p : liste) {
+    for (auto& p :  getListePokemons()) {
         if (p.getNumero() == numero) {
             return new Pokemon(p);
         }
@@ -20,7 +20,7 @@ Pokemon* PokemonParty::getPokemonByNumero(int numero) {
 }
 
 Pokemon* PokemonParty::getPokemonByNom(const std::string& nom) {
-    for (auto& p : liste) {
+    for (auto& p :  getListePokemons()) {
         if (p.getNom() == nom) {
             return new Pokemon(p);
         }
@@ -29,9 +29,9 @@ Pokemon* PokemonParty::getPokemonByNom(const std::string& nom) {
 }
 
 bool PokemonParty::retirerPokemon(int numero) {
-    for (auto it = listePockemons.begin(); it != listePockemons.end(); ++it) {
+    for (auto it = getListePokemons().begin(); it != getListePokemons().end(); ++it) {
         if (it->getNumero() == numero) {
-            liste.erase(it);
+            getListePokemons().erase(it);
             return true;
         }
     }

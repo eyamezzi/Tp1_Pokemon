@@ -4,7 +4,7 @@
 
 
 
-#include "PockemonVector.h"
+#include "PokemonVector.h"
 #include <memory>
 
 class PokemonParty : public PokemonVector {

@@ -1,76 +1,101 @@
-//
-// Created by mezzi on 14/09/2026.
-//
-
 #include "../Inc/Pokedex.h"
-#include<iostream>
+
+#include <iostream>
 #include <fstream>
 #include <sstream>
-using namespace std;
+#include <vector>
+#include <stdexcept>
+
 Pokedex* Pokedex::instance = nullptr;
 
-Pokedex::Pokedex(const string& csvFile) {
+Pokedex::Pokedex(const std::string& csvFile) {
     try {
-        ifstream file(csvFile);
+        std::ifstream file(csvFile);
 
         if (!file.is_open()) {
-            throw runtime_error("Impossible d'ouvrir le fichier : " + csvFile);
+            throw std::runtime_error(
+                "Impossible d'ouvrir le fichier : " + csvFile
+            );
         }
 
-        string line;
-        getline(file, line); // Ignorer l'en-tête
+        std::string line;
 
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string cell;
-            vector<string> data;
+        // Ignorer l'en-tête
+        std::getline(file, line);
 
-            while (getline(ss, cell, ',')) {
+        while (std::getline(file, line)) {
+            std::stringstream ss(line);
+            std::string cell;
+            std::vector<std::string> data;
+
+            while (std::getline(ss, cell, ',')) {
                 data.push_back(cell);
             }
 
-            // Vérification minimale
             if (data.size() < 12) {
-                throw runtime_error("Ligne CSV invalide : " + line);
+                throw std::runtime_error(
+                    "Ligne CSV invalide : " + line
+                );
             }
 
-            int numero     = stoi(data[0]);
-            string nom     = data[1];
-            int pvMax      = stoi(data[5]);
-            int attaque    = stoi(data[6]);
-            int defense    = stoi(data[7]);
-            int evolution  = stoi(data[11]);
+            int numero = std::stoi(data[0]);
+            std::string nom = data[1];
+            int pvMax = std::stoi(data[5]);
+            int attaque = std::stoi(data[6]);
+            int defense = std::stoi(data[7]);
+            int evolution = std::stoi(data[11]);
 
-            Pokemon p(numero, nom, pvMax, attaque, defense, evolution);
-            listePockemons.push_back(p);
+            Pokemon p(
+                numero,
+                nom,
+                pvMax,
+                attaque,
+                defense,
+                evolution
+            );
+
+            getListePokemons().push_back(p);
         }
     }
-    catch (const exception& e) {
-        cerr << "[ERREUR POKEDEX]" << e.what() << endl;
+    catch (const std::exception& e) {
+        std::cerr << "[ERREUR POKEDEX] "
+                  << e.what()
+                  << std::endl;
     }
 }
+
 
 Pokedex* Pokedex::getInstance(const std::string& csvFile) {
-    if (!instance)
+    if (instance == nullptr) {
         instance = new Pokedex(csvFile);
+    }
+
     return instance;
 }
+
+
 void Pokedex::ajouterPokemon(const Pokemon& p) {
-    listePockemons.push_back(p);
+    getListePokemons().push_back(p);
 }
 
+
 Pokemon* Pokedex::getPokemonByNumero(int numero) {
-    for (auto& p : listePockemons) {
-        if (p.getNumero() == numero)
-            return new Pokemon(p); // clone de pokemon
+    for (auto& p : getListePokemons()) {
+        if (p.getNumero() == numero) {
+            return new Pokemon(p);
+        }
     }
+
     return nullptr;
 }
 
-Pokemon* Pokedex::getPokemonByNom(const string& nom) {
-    for (auto& p : listePockemons) {
-        if (p.getNom() == nom)
-            return new Pokemon(p); // clone de pokemon
+
+Pokemon* Pokedex::getPokemonByNom(const std::string& nom) {
+    for (auto& p : getListePokemons()) {
+        if (p.getNom() == nom) {
+            return new Pokemon(p);
+        }
     }
+
     return nullptr;
 }
