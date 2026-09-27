@@ -1,33 +1,36 @@
 #include <SFML/Graphics.hpp>
-
-#include "../Inc/Pokedex.h"
-#include <iostream>
-
-using namespace std;
+#include "../Inc/GameStateManager.h"
+#include "../Inc/AccueilState.h"
 
 
 int main() {
-    Pokedex* dex = Pokedex::getInstance("pokedex.csv");
+    // Le Pokedex est un Singleton : une seule instance pour tout le programme
+    Pokedex* pokedex = Pokedex::getInstance("data/pokedex.csv");
 
-    // Test : afficher le nombre de Pokémon lus
-    cout << "Nombre de Pokemon lus : "
-         << dex->getNombrePokemons()
-         << endl;
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Pokemon Selector");
+    window.setFramerateLimit(60);
 
-    // Test : afficher le premier Pokémon
-    Pokemon* p = dex->getPokemonByNumero(1);
+    GameStateManager gameManager(pokedex);
+    gameManager.changeState(std::make_unique<AccueilState>(gameManager));
 
-    if (p != nullptr) {
-        cout << "Premier Pokemon : "
-             << p->getNom()
-             << endl;
+    sf::Clock clock;
 
-        delete p;
-    } else {
-        cout << "Aucun Pokemon trouve" << endl;
+    while (window.isOpen()) {
+        sf::Event event{};
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+            gameManager.handleEvent(event);
+        }
+
+        float deltaTime = clock.restart().asSeconds();
+        gameManager.update(deltaTime);
+
+        gameManager.render(window);
+        window.display();
     }
-
-    dex->afficherListePokemon();
 
     return 0;
 }
+

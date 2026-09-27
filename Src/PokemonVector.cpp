@@ -24,3 +24,14 @@ void PokemonVector::afficherListePokemon() const {
 size_t PokemonVector::getNombrePokemons() const {
     return listePokemons.size();
 }
+
+bool PokemonVector::retirerPokemon(int numero) {
+    auto& liste = getListePokemons();
+    for (auto it = liste.begin(); it != liste.end(); ++it) {
+        if (it->getNumero() == numero) {
+            liste.erase(it);
+            return true;
+        }
+    }
+    return false;
+}

@@ -9,7 +9,7 @@ set(SFML_DIR "C:/Users/mezzi/Downloads/SFML-2.6.1-windows-gcc-13.1.0-mingw-64-bi
 find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
 
 add_executable(Tp1
-        src/main.cpp
+        Src/main.cpp
         Src/Pokemon.cpp
         Inc/Pokemon.h
         Src/PokemonVector.cpp
@@ -20,6 +20,23 @@ add_executable(Tp1
         Inc/Pokemon_Party.h
         Src/Pokemon_Attack.cpp
         Inc/Pokemon_Attack.h
+        Src/SelectionState.cpp
+        Inc/SelectionState.h
+        Src/GameState.cpp
+        Inc/GameState.h
+        Src/GameStateManager.cpp
+        Inc/GameStateManager.h
+        Src/AccueilState.cpp
+        Inc/AccueilState.h
+        Src/ExplorationState.cpp
+        Inc/ExplorationState.h
+        Src/RencontreState.cpp
+        Inc/RencontreState.h
+        Src/CombatState.cpp
+        Inc/CombatState.h
+        Src/GameOverState.cpp
+        Inc/GameOverState.h
+        Inc/Pokemonassets.h
 )
 target_link_libraries(Tp1
         sfml-system

@@ -1,9 +1,7 @@
 //
 // Created by mezzi on 14/09/2026.
 //
-
-
-
+#pragma once
 #include "PokemonVector.h"
 #include <memory>
 
