@@ -1,10 +1,4 @@
-//
-// Created by eya on 9/27/26.
-//
-
-
 #pragma once
-
 #include "GameState.h"
 #include <SFML/Graphics.hpp>
 
@@ -12,7 +6,17 @@ class AccueilState : public GameState {
 private:
     sf::Font font;
     sf::Text titleText;
-    sf::Text hintText;
+    sf::Text subtitleText;
+
+    sf::RectangleShape startButton;
+    sf::Text startButtonText;
+    sf::Color buttonColorNormal;
+    sf::Color buttonColorHover;
+
+    sf::CircleShape decorCircleTop;
+    sf::CircleShape decorCircleBottom;
+
+    bool isMouseOverButton(const sf::Vector2f& mousePos) const;
 
 public:
     explicit AccueilState(GameStateManager& manager);
@@ -22,4 +26,3 @@ public:
     void update(float deltaTime) override;
     void render(sf::RenderWindow& window) override;
 };
-
