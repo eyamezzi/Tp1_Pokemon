@@ -1,13 +1,34 @@
-//
-// Created by eya on 9/30/26.
-//
+#pragma once
+#include "GameState.h"
+#include <SFML/Graphics.hpp>
 
-#ifndef TP1_RANDOMSTATE_H
-#define TP1_RANDOMSTATE_H
+class RandomState : public GameState {
+private:
+    sf::Font font;
+    sf::Text explorationText;
 
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
 
-class RandomState {
+    sf::RectangleShape ground;
+    sf::CircleShape player;
+
+    float elapsedTime = 0.f;
+    float explorationDuration = 2.5f;
+
+    float playerX = 0.f;
+    float playerSpeed = 150.f;
+
+    bool destinationChoisie = false;
+    bool versRencontre = false;
+
+    void choisirDestination();
+
+public:
+    explicit RandomState(GameStateManager& manager);
+
+    void onEnter() override;
+    void handleEvent(const sf::Event& event) override;
+    void update(float deltaTime) override;
+    void render(sf::RenderWindow& window) override;
 };
-
-
-#endif //TP1_RANDOMSTATE_H
