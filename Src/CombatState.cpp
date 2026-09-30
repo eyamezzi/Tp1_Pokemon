@@ -1,159 +1,117 @@
-
-//
-// CombatState.cpp
-// Combat dans l'arène. Les PV du combattant actif persistent entre les
-// combats (via GameStateManager::getCombattantActuel), et l'équipe tourne
-// automatiquement vers le Pokemon suivant quand l'actuel est K.O.
-// Game Over seulement quand toute l'équipe est K.O.
-//
-
 #include "../Inc/CombatState.h"
 #include "../Inc/GameStateManager.h"
-#include "../Inc/ExplorationState.h"
+#include "../Inc/RandomState.h"
 #include "../Inc/GameOverState.h"
-#include "../Inc/Pokemonassets.h"
-#include <random>
-#include <iostream>
+#include <cstdlib>
 
-CombatState::CombatState(GameStateManager& manager)
-    : GameState(manager), combattant(nullptr)
-{
-}
-
-void CombatState::chargerSprites() {
-    combattant = manager.getCombattantActuel();
-
-    if (combattant) {
-        if (texJoueur.loadFromFile(getPokemonImagePath(combattant->getNumero()))) {
-            spriteJoueur.setTexture(texJoueur);
-            spriteJoueur.setPosition(150.f, 320.f);
-        } else {
-            std::cerr << "[CombatState] Sprite joueur introuvable." << std::endl;
-        }
-    }
-
-    if (adversaire) {
-        if (texAdversaire.loadFromFile(getPokemonImagePath(adversaire->getNumero()))) {
-            spriteAdversaire.setTexture(texAdversaire);
-            spriteAdversaire.setPosition(500.f, 120.f);
-        } else {
-            std::cerr << "[CombatState] Sprite adversaire introuvable." << std::endl;
-        }
-    }
-
-    if (texVs.loadFromFile("data/versusSmall.png")) {
-        spriteVs.setTexture(texVs);
-        spriteVs.setPosition(370.f, 220.f);
-    }
-
-    if (texGauge.loadFromFile("data/healthGauge.png")) {
-        spriteGaugeJoueur.setTexture(texGauge);
-        spriteGaugeJoueur.setPosition(140.f, 290.f);
-
-        spriteGaugeAdversaire.setTexture(texGauge);
-        spriteGaugeAdversaire.setPosition(490.f, 90.f);
-    }
-
-    barreVieJoueur.setFillColor(sf::Color::Green);
-    barreVieJoueur.setPosition(160.f, 300.f);
-    barreVieJoueur.setSize(sf::Vector2f(100.f, 10.f));
-
-    barreVieAdversaire.setFillColor(sf::Color::Green);
-    barreVieAdversaire.setPosition(510.f, 100.f);
-    barreVieAdversaire.setSize(sf::Vector2f(100.f, 10.f));
-}
-
-void CombatState::mettreAJourBarresVie() {
-    if (combattant) {
-        float ratio = static_cast<float>(combattant->getPvActual()) /
-                      static_cast<float>(combattant->getPvMax());
-        barreVieJoueur.setSize(sf::Vector2f(100.f * ratio, 10.f));
-        barreVieJoueur.setFillColor(ratio > 0.3f ? sf::Color::Green : sf::Color::Red);
-    }
-
-    if (adversaire) {
-        float ratio = static_cast<float>(adversaire->getPvActual()) /
-                      static_cast<float>(adversaire->getPvMax());
-        barreVieAdversaire.setSize(sf::Vector2f(100.f * ratio, 10.f));
-        barreVieAdversaire.setFillColor(ratio > 0.3f ? sf::Color::Green : sf::Color::Red);
-    }
+CombatState::CombatState(GameStateManager& manager) : GameState(manager) {
 }
 
 void CombatState::onEnter() {
-    if (!font.loadFromFile("data/PressStart2P-Regular.ttf")) {
-        std::cerr << "[CombatState] Police introuvable." << std::endl;
+    font.loadFromFile("data/PressStart2P-Regular.ttf");
+
+    duels.clear();
+    auto& attack = manager.getAttack();
+    int maxNumero = static_cast<int>(manager.getPokedex().getNombrePokemons());
+
+    for (size_t i = 0; i < attack.getNombrePokemons(); ++i) {
+        Duel duel;
+        duel.combattant = attack.getPokemonAt(i);
+        int numero = (std::rand() % maxNumero) + 1;
+        duel.adversaire.reset(manager.getPokedex().getPokemonByNumero(numero));
+        duels.push_back(std::move(duel));
     }
 
-    static std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(1, 151);
-    adversaire.reset(manager.getPokedex().getPokemonByNumero(dist(rng)));
+    titleText.setFont(font);
+    titleText.setString("Combats en cours - cliquez pour voir le resultat");
+    titleText.setCharacterSize(20);
+    titleText.setFillColor(sf::Color::White);
+    titleText.setPosition(20.f, 20.f);
 
-    chargerSprites();
-    mettreAJourBarresVie();
+    resultButton.setSize({200.f, 50.f});
+    resultButton.setFillColor(sf::Color(60, 60, 60));
+    resultButton.setPosition(300.f, 520.f);
 
-    std::string nomJoueur = combattant ? combattant->getNom() : "???";
-    std::string nomAdv = adversaire ? adversaire->getNom() : "???";
+    resultButtonText.setFont(font);
+    resultButtonText.setString("Voir le resultat");
+    resultButtonText.setCharacterSize(18);
+    resultButtonText.setFillColor(sf::Color::White);
+    resultButtonText.setPosition(320.f, 535.f);
 
-    infoText.setFont(font);
-    infoText.setString(nomJoueur + " VS " + nomAdv + "   [A = attaquer]");
-    infoText.setCharacterSize(22);
-    infoText.setFillColor(sf::Color::White);
-    infoText.setPosition(50.f, 20.f);
+    resultatsAffiches = false;
+}
+
+void CombatState::resoudreDuel(Duel& duel) {
+    int rounds = 0;
+    while (duel.combattant->getPvActual() > 0 &&
+           duel.adversaire->getPvActual() > 0 &&
+           rounds < 100) {
+        duel.combattant->attaquer(*duel.adversaire);
+        if (duel.adversaire->getPvActual() <= 0) break;
+        duel.adversaire->attaquer(*duel.combattant);
+        rounds++;
+    }
+    duel.gagne = duel.combattant->getPvActual() > 0;
 }
 
 void CombatState::handleEvent(const sf::Event& event) {
-    if (event.type != sf::Event::KeyPressed || event.key.code != sf::Keyboard::A) {
-        return;
-    }
+    if (event.type != sf::Event::MouseButtonPressed) return;
+    if (event.mouseButton.button != sf::Mouse::Left) return;
 
-    if (!combattant || !adversaire) {
-        std::cout << "Pas de Pokemon disponible pour combattre !" << std::endl;
-        manager.changeState(std::make_unique<ExplorationState>(manager));
-        return;
-    }
+    sf::Vector2f clickPos(static_cast<float>(event.mouseButton.x),
+                           static_cast<float>(event.mouseButton.y));
 
-    combattant->attaquer(*adversaire);
+    if (!resultatsAffiches) {
+        if (resultButton.getGlobalBounds().contains(clickPos)) {
+            resultTexts.clear();
+            for (auto& duel : duels) {
+                resoudreDuel(duel);
+                std::string msg = duel.combattant->getNom() + " vs " +
+                                   duel.adversaire->getNom() + " : " +
+                                   (duel.gagne ? "GAGNE" : "PERDU");
+                sf::Text t(msg, font, 18);
+                t.setFillColor(duel.gagne ? sf::Color::Green : sf::Color::Red);
+                resultTexts.push_back(t);
+            }
 
-    if (adversaire->getPvActual() <= 0) {
-        std::cout << "Victoire ! " << adversaire->getNom() << " rejoint votre equipe." << std::endl;
-        manager.getParty().ajouterPokemon(*adversaire);
-        manager.changeState(std::make_unique<ExplorationState>(manager));
-        return;
-    }
+            for (auto& duel : duels) {
+                if (!duel.gagne) {
+                    manager.getParty().retirerPokemon(duel.combattant->getNumero());
+                }
+            }
+            manager.getAttack().viderListe();
 
-    adversaire->attaquer(*combattant);
-    mettreAJourBarresVie();
-
-    if (combattant->getPvActual() <= 0) {
-        std::cout << combattant->getNom() << " est K.O." << std::endl;
-
-        // GameStateManager passe automatiquement au prochain Pokemon vivant
-        Pokemon* suivant = manager.getCombattantActuel();
-
-        if (manager.toutePartieVaincue() || !suivant) {
-            std::cout << "Toute l'equipe est K.O. ! Defaite..." << std::endl;
+            resultatsAffiches = true;
+        }
+    } else {
+        if (manager.getParty().getNombrePokemons() == 0) {
             manager.changeState(std::make_unique<GameOverState>(manager));
         } else {
-            std::cout << suivant->getNom() << " entre au combat !" << std::endl;
-            chargerSprites(); // recharge le sprite/texte pour le nouveau combattant
-            infoText.setString(suivant->getNom() + " VS " + adversaire->getNom() + "   [A = attaquer]");
+            manager.changeState(std::make_unique<RandomState>(manager));
         }
     }
 }
 
 void CombatState::update(float deltaTime) {
-    (void)deltaTime;
 }
 
 void CombatState::render(sf::RenderWindow& window) {
-    window.clear(sf::Color(90, 30, 30));
-    window.draw(infoText);
+    window.draw(titleText);
 
-    window.draw(spriteGaugeJoueur);
-    window.draw(spriteGaugeAdversaire);
-    window.draw(barreVieJoueur);
-    window.draw(barreVieAdversaire);
-    window.draw(spriteJoueur);
-    window.draw(spriteAdversaire);
-    window.draw(spriteVs);
+    if (!resultatsAffiches) {
+        window.draw(resultButton);
+        window.draw(resultButtonText);
+    } else {
+        float y = 100.f;
+        for (auto& t : resultTexts) {
+            sf::Text copy = t;
+            copy.setPosition(20.f, y);
+            window.draw(copy);
+            y += 30.f;
+        }
+        sf::Text continueText("Cliquez pour continuer", font, 16);
+        continueText.setFillColor(sf::Color(180, 180, 180));
+        continueText.setPosition(20.f, 550.f);
+        window.draw(continueText);
+    }
 }

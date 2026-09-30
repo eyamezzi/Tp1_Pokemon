@@ -2,12 +2,35 @@
 // Created by eya on 9/30/26.
 //
 
-#ifndef TP1_FIGHTINGSTATE_H
-#define TP1_FIGHTINGSTATE_H
+#pragma once
+#include "GameState.h"
+#include "Pokemon_Party.h"
+#include <SFML/Graphics.hpp>
+#include <vector>
 
+class FightingState : public GameState {
+private:
+    PokemonParty& party;
 
-class FightingState {
+    std::vector<int> candidateNumeros;
+    std::vector<int> selectedOrder;
+
+    sf::Font font;
+    sf::Text titleText;
+    sf::RectangleShape fightButton;
+    sf::Text fightButtonText;
+
+    std::vector<sf::Texture> candidateTextures;
+    std::vector<sf::Sprite> candidateSprites;
+    std::vector<sf::Text> candidateLabels;
+
+    void rebuildDisplay();
+
+public:
+    explicit FightingState(GameStateManager& manager);
+
+    void onEnter() override;
+    void handleEvent(const sf::Event& event) override;
+    void update(float deltaTime) override;
+    void render(sf::RenderWindow& window) override;
 };
-
-
-#endif //TP1_FIGHTINGSTATE_H

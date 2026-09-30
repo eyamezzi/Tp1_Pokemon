@@ -1,75 +1,68 @@
-//
 // ExplorationState.cpp
-// Exploration -> Rencontre/Capture OU Combat dans l'arène (rencontre aléatoire).
-//
-
 #include "../Inc/ExplorationState.h"
 #include "../Inc/GameStateManager.h"
 #include "../Inc/RencontreState.h"
 #include "../Inc/CombatState.h"
-#include "../Inc/SelectionState.h"
-#include <random>
+#include <cstdlib>
 #include <iostream>
 
 ExplorationState::ExplorationState(GameStateManager& manager)
-    : GameState(manager), timerAvantRencontre(0.f)
-{
+    : GameState(manager), party(manager.getParty()), attack(manager.getAttack()) {
 }
-
 void ExplorationState::onEnter() {
-    if (!font.loadFromFile("data/PressStart2P-Regular.ttf")) {
-        std::cerr << "[ExplorationState] Police introuvable." << std::endl;
-    }
+    font.loadFromFile("data/PressStart2P-Regular.ttf");
 
-    infoText.setFont(font);
-    infoText.setString("Exploration en cours...  [ESPACE] avancer   [S] equipe");
-    infoText.setCharacterSize(22);
-    infoText.setFillColor(sf::Color::White);
-    infoText.setPosition(50.f, 50.f);
+    player.setSize({30.f, 30.f});
+    player.setFillColor(sf::Color::Green);
+    player.setPosition(400.f, 300.f);
 
-    timerAvantRencontre = 0.f;
+    hintText.setFont(font);
+    hintText.setString("Deplacez-vous avec les fleches. Rencontres aleatoires en explorant.");
+    hintText.setCharacterSize(18);
+    hintText.setFillColor(sf::Color::White);
+    hintText.setPosition(20.f, 20.f);
+
+    encounterTimer = 0.f;
 }
 
 void ExplorationState::handleEvent(const sf::Event& event) {
-    if (event.type != sf::Event::KeyPressed) {
-        return;
-    }
-
-    if (event.key.code == sf::Keyboard::Space) {
-        // Force une rencontre immédiate pour tester le jeu
-        timerAvantRencontre = 999.f;
-    } else if (event.key.code == sf::Keyboard::S) {
-        // Ouvre l'écran de gestion d'équipe
-        manager.changeState(std::make_unique<SelectionState>(manager));
-    }
+    // Le déplacement continu est géré dans update() via sf::Keyboard::isKeyPressed
 }
 
 void ExplorationState::update(float deltaTime) {
-    timerAvantRencontre += deltaTime;
+    sf::Vector2f movement(0.f, 0.f);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    movement.y -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  movement.y += 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  movement.x -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) movement.x += 1.f;
 
-    // Une rencontre survient toutes les ~3 secondes (ou via ESPACE)
-    if (timerAvantRencontre < 3.f) {
-        return;
-    }
+    bool isMoving = (movement.x != 0.f || movement.y != 0.f);
+    if (isMoving) {
+        player.move(movement * playerSpeed * deltaTime);
 
-    // Lambda : détermine aléatoirement le type de rencontre.
-    // Usage de lambda demandé par le sujet du TP.
-    static std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(0, 1);
-
-    auto tirerTypeRencontre = [&]() -> bool {
-        // true = rencontre sauvage (capture), false = combat d'arène
-        return dist(rng) == 0;
-    };
-
-    if (tirerTypeRencontre()) {
-        manager.changeState(std::make_unique<RencontreState>(manager));
-    } else {
-        manager.changeState(std::make_unique<CombatState>(manager));
+        encounterTimer += deltaTime;
+        if (encounterTimer >= encounterInterval) {
+            encounterTimer = 0.f;
+            if (attack.getNombrePokemons() == 0) {
+                std::cout << "Aucun Pokemon dans l'equipe d'attaque, rencontre ignoree." << std::endl;
+                return;
+            }
+            int chance = std::rand() % 100;
+            if (chance < 30) { // 30% de chance par intervalle qu'une rencontre se déclenche
+                int typeRencontre = std::rand() % 100;
+                if (typeRencontre < 50) {
+                    // 50% : rencontre sauvage (capture ou fuite)
+                    manager.changeState(std::make_unique<RencontreState>(manager));
+                } else {
+                    // 50% : combat direct contre un dresseur/Pokemon
+                    manager.changeState(std::make_unique<CombatState>(manager));
+                }
+            }
+        }
     }
 }
 
 void ExplorationState::render(sf::RenderWindow& window) {
-    window.clear(sf::Color(30, 80, 30));
-    window.draw(infoText);
+    window.draw(hintText);
+    window.draw(player);
 }

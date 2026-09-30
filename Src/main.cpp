@@ -1,36 +1,39 @@
 #include <SFML/Graphics.hpp>
 #include "../Inc/GameStateManager.h"
 #include "../Inc/AccueilState.h"
-
+#include "../Inc/Pokedex.h"
+#include <cstdlib>
+#include <ctime>
 
 int main() {
-    // Le Pokedex est un Singleton : une seule instance pour tout le programme
-    Pokedex* pokedex = Pokedex::getInstance("data/pokedex.csv");
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Pokemon Selector");
-    window.setFramerateLimit(60);
 
-    GameStateManager gameManager(pokedex);
-    gameManager.changeState(std::make_unique<AccueilState>(gameManager));
+    Pokedex* dex = Pokedex::getInstance("data/pokedex.csv");
+
+    GameStateManager manager(dex);
+
+    manager.changeState(std::make_unique<AccueilState>(manager));
+    manager.applyPendingChange();
 
     sf::Clock clock;
-
     while (window.isOpen()) {
         sf::Event event{};
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+            if (event.type == sf::Event::Closed)
                 window.close();
-            }
-            gameManager.handleEvent(event);
+            manager.handleEvent(event);
         }
 
         float deltaTime = clock.restart().asSeconds();
-        gameManager.update(deltaTime);
+        manager.update(deltaTime);
+        manager.applyPendingChange();
 
-        gameManager.render(window);
+        window.clear(sf::Color::Black);
+        manager.render(window);
         window.display();
     }
 
     return 0;
 }
-

@@ -18,7 +18,7 @@ public:
     Pokemon* getPokemonByNom(const std::string& nom) override;
 
     // Créer l'équipe d'attaque à partir de la Party
-    void creerDepuisParty(const PokemonParty& party);
+    void creerDepuisParty(PokemonParty& party);
 
     // Réintégrer les Pokemon dans la Party
     void reintegrerDansParty(PokemonParty& party);

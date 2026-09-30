@@ -1,16 +1,22 @@
 #pragma once
-
 #include "GameState.h"
+#include "Pokemon.h"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class RencontreState : public GameState {
 private:
+    std::unique_ptr<Pokemon> sauvage;
+
     sf::Font font;
     sf::Text infoText;
-    int numeroSauvage;
+    sf::Text choixText;
 
-    sf::Texture texSauvage;
-    sf::Sprite spriteSauvage;
+    sf::Texture sauvageTexture;
+    sf::Sprite sauvageSprite;
+
+    bool resultatAffiche = false;
+    std::string resultatMessage;
 
 public:
     explicit RencontreState(GameStateManager& manager);
@@ -20,5 +26,3 @@ public:
     void update(float deltaTime) override;
     void render(sf::RenderWindow& window) override;
 };
-
-

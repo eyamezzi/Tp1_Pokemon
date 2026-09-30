@@ -37,6 +37,10 @@ add_executable(Tp1
         Src/GameOverState.cpp
         Inc/GameOverState.h
         Inc/Pokemonassets.h
+        Src/RandomState.cpp
+        Inc/RandomState.h
+        Src/FightingState.cpp
+        Inc/FightingState.h
 )
 target_link_libraries(Tp1
         sfml-system

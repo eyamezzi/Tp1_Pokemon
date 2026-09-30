@@ -1,37 +1,29 @@
-//
-// GameState.h
-// Interface abstraite du design pattern STATE.
-// Chaque écran du jeu (Accueil, Exploration, Rencontre, Combat, GameOver)
-// est une classe concrète qui hérite de GameState.
-//
-
 #pragma once
-
 #include <SFML/Graphics.hpp>
+#include <memory>
 
-class GameStateManager; // déclaration anticipée pour éviter l'inclusion circulaire
+class GameStateManager; // forward declaration, évite l'inclusion circulaire
 
 class GameState {
 protected:
-    GameStateManager& manager;
+    GameStateManager& manager; // référence vers le gestionnaire, pour demander un changement d'état
 
 public:
-    explicit GameState(GameStateManager& manager) : manager(manager) {}
+    explicit GameState(GameStateManager& manager);
     virtual ~GameState() = default;
 
-    // Appelé une seule fois quand on entre dans l'état
+    // Appelée une fois à l'entrée dans l'état (ex: charger textures, réinitialiser sélection)
     virtual void onEnter() {}
 
-    // Appelé une seule fois quand on quitte l'état
+    // Appelée une fois à la sortie de l'état (ex: libérer ressources spécifiques)
     virtual void onExit() {}
 
-    // Gestion des évènements (clavier, souris, fermeture fenêtre)
+    // Gestion des événements SFML (clic, touche...)
     virtual void handleEvent(const sf::Event& event) = 0;
 
-    // Logique du jeu (appelée à chaque frame)
+    // Mise à jour logique (déplacements, timers, IA...)
     virtual void update(float deltaTime) = 0;
 
-    // Affichage (appelé à chaque frame)
+    // Dessin à l'écran
     virtual void render(sf::RenderWindow& window) = 0;
 };
-

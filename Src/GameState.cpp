@@ -3,3 +3,6 @@
 //
 
 #include "../Inc/GameState.h"
+
+GameState::GameState(GameStateManager& manager) : manager(manager) {
+}

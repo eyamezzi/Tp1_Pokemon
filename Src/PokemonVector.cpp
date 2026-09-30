@@ -35,3 +35,19 @@ bool PokemonVector::retirerPokemon(int numero) {
     }
     return false;
 }
+
+Pokemon* PokemonVector::getPokemonAt(size_t index) {
+    auto& liste = getListePokemons();
+    if (index >= liste.size()) return nullptr;
+    return &liste[index];
+}
+
+const Pokemon* PokemonVector::getPokemonAt(size_t index) const {
+    const auto& liste = getListePokemons();
+    if (index >= liste.size()) return nullptr;
+    return &liste[index];
+}
+
+void PokemonVector::viderListe() {
+    getListePokemons().clear();
+}

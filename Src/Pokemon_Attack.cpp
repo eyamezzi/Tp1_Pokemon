@@ -1,7 +1,7 @@
 //
 // Created by mezzi on 14/09/2026.
 //
-#pragma once
+
 #include "../Inc/Pokemon_Attack.h"
 
 #include <iostream>
@@ -47,14 +47,13 @@ bool PokemonAttack::estPleine() const {
 }
 
 
-void PokemonAttack::creerDepuisParty(const PokemonParty& party) {
+void PokemonAttack::creerDepuisParty(PokemonParty& party) {
     getListePokemons().clear();
-
-    for (const auto& pokemon : party.getPokemons()) { 
-        if (estPleine()) {
-            break;
-        }
-        getListePokemons().push_back(pokemon);
+    auto pokemonsCopy = party.getPokemons(); // copie des numéros à traiter
+    for (const auto& pokemon : pokemonsCopy) {
+        if (estPleine()) break;
+        ajouterPokemon(pokemon);
+        party.retirerPokemon(pokemon.getNumero());
     }
 }
 

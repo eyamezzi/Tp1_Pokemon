@@ -19,10 +19,8 @@ Pokemon::Pokemon(int numero,
       evolution(evolution)
 {
 }
-
 Pokemon::~Pokemon() {
 }
-
 void Pokemon::attaquer(Pokemon& target) {
     int diff = attaque - target.defense;
 

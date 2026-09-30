@@ -24,5 +24,8 @@ public:
     bool retirerPokemon(int numero);
     void afficherListePokemon() const;
     size_t getNombrePokemons() const;
-};
 
+    Pokemon* getPokemonAt(size_t index);
+    const Pokemon* getPokemonAt(size_t index) const;
+    void viderListe();
+};

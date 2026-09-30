@@ -1,87 +1,98 @@
-//
-// RencontreState.cpp
-// Rencontre / Capture de Pokemon -> retour Exploration (succès ou échec).
-//
-
 #include "../Inc/RencontreState.h"
 #include "../Inc/GameStateManager.h"
-#include "../Inc/ExplorationState.h"
-#include "../Inc/Pokemonassets.h"
-#include <random>
+#include "../Inc/RandomState.h"
+#include <cstdlib>
 #include <iostream>
-#include <memory>
 
-RencontreState::RencontreState(GameStateManager& manager)
-    : GameState(manager), numeroSauvage(0)
-{
+RencontreState::RencontreState(GameStateManager& manager) : GameState(manager) {
 }
 
 void RencontreState::onEnter() {
-    if (!font.loadFromFile("data/PressStart2P-Regular.ttf")) {
-        std::cerr << "[RencontreState] Police introuvable." << std::endl;
-    }
+    font.loadFromFile("data/PressStart2P-Regular.ttf");
 
-    // Tire un numéro de Pokemon au hasard dans le Pokedex (adapte le max réel)
-    static std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(1, 151);
-    numeroSauvage = dist(rng);
+    int maxNumero = static_cast<int>(manager.getPokedex().getNombrePokemons());
+    int numeroSauvage = (std::rand() % (maxNumero > 0 ? maxNumero : 1)) + 1;
+    sauvage.reset(manager.getPokedex().getPokemonByNumero(numeroSauvage));
 
-    infoText.setFont(font);
-    infoText.setString(
-        "Un Pokemon sauvage (#" + std::to_string(numeroSauvage) +
-        ") apparait !\nC = capturer   E = fuir"
-    );
-    infoText.setCharacterSize(22);
-    infoText.setFillColor(sf::Color::White);
-    infoText.setPosition(50.f, 50.f);
-
-    if (texSauvage.loadFromFile(getPokemonImagePath(numeroSauvage))) {
-        spriteSauvage.setTexture(texSauvage);
-    } else if (texSauvage.loadFromFile(getUnknownPokemonImagePath())) {
-        spriteSauvage.setTexture(texSauvage);
-    }
-    spriteSauvage.setPosition(350.f, 200.f);
-}
-
-void RencontreState::handleEvent(const sf::Event& event) {
-    if (event.type != sf::Event::KeyPressed) {
+    if (!sauvage) {
+        std::cerr << "[RencontreState] Impossible de tirer un Pokemon sauvage." << std::endl;
+        manager.changeState(std::make_unique<RandomState>(manager));
         return;
     }
 
-    if (event.key.code == sf::Keyboard::E) {
-        manager.changeState(std::make_unique<ExplorationState>(manager));
+    std::string path = "data/image_pokedex-20260914/pokemon/" +
+                        std::to_string(sauvage->getNumero()) + ".png";
+    if (sauvageTexture.loadFromFile(path)) {
+        sauvageSprite.setTexture(sauvageTexture);
+        sauvageSprite.setPosition(350.f, 150.f);
+        sauvageSprite.setScale(1.5f, 1.5f);
+    }
+
+    infoText.setFont(font);
+    infoText.setString("Un " + sauvage->getNom() + " sauvage apparait !");
+    infoText.setCharacterSize(24);
+    infoText.setFillColor(sf::Color::White);
+    infoText.setPosition(20.f, 20.f);
+
+    choixText.setFont(font);
+    choixText.setCharacterSize(20);
+    choixText.setFillColor(sf::Color::Yellow);
+    choixText.setString("C : Capturer   |   F : Fuir");
+    choixText.setPosition(20.f, 500.f);
+
+    resultatAffiche = false;
+}
+
+void RencontreState::handleEvent(const sf::Event& event) {
+    if (resultatAffiche) {
+        if (event.type == sf::Event::KeyPressed) {
+            manager.changeState(std::make_unique<RandomState>(manager));
+        }
+        return;
+    }
+
+    if (event.type != sf::Event::KeyPressed) return;
+
+    if (event.key.code == sf::Keyboard::F) {
+        resultatMessage = "Vous avez fui.";
+        resultatAffiche = true;
         return;
     }
 
     if (event.key.code == sf::Keyboard::C) {
-        // Récupère un clone du Pokemon depuis le Pokedex.
-        // std::unique_ptr prend possession du pointeur brut renvoyé par
-        // Pokedex::getPokemonByNumero afin d'éviter toute fuite mémoire.
-        std::unique_ptr<Pokemon> capture(
-            manager.getPokedex().getPokemonByNumero(numeroSauvage)
-        );
-
-        static std::mt19937 rng(std::random_device{}());
-        std::uniform_int_distribution<int> dist(0, 100);
-        bool succes = dist(rng) > 40; // 60% de chance de réussite
-
-        if (capture && succes) {
-            manager.getParty().ajouterPokemon(*capture);
-            std::cout << "Capture reussie : " << capture->getNom() << std::endl;
+        int chance = std::rand() % 100;
+        if (chance < 50) {
+            manager.getParty().ajouterPokemon(*sauvage);
+            resultatMessage = "Capture reussie ! #" + std::to_string(sauvage->getNumero()) +
+                               " " + sauvage->getNom() +
+                               " (PV:" + std::to_string(sauvage->getPvMax()) +
+                               " ATK:" + std::to_string(static_cast<int>(sauvage->getAttack())) +
+                               " DEF:" + std::to_string(static_cast<int>(sauvage->getDefense())) + ")";
         } else {
-            std::cout << "Capture echouee." << std::endl;
+            resultatMessage = sauvage->getNom() + " s'est echappe.";
         }
-
-        manager.changeState(std::make_unique<ExplorationState>(manager));
+        resultatAffiche = true;
     }
 }
 
 void RencontreState::update(float deltaTime) {
-    (void)deltaTime;
 }
 
 void RencontreState::render(sf::RenderWindow& window) {
-    window.clear(sf::Color(60, 40, 90));
+    window.draw(sauvageSprite);
     window.draw(infoText);
-    window.draw(spriteSauvage);
+
+    if (resultatAffiche) {
+        sf::Text result(resultatMessage, font, 22);
+        result.setFillColor(sf::Color::Green);
+        result.setPosition(20.f, 400.f);
+        window.draw(result);
+
+        sf::Text continueText("Appuyez sur une touche pour continuer", font, 16);
+        continueText.setFillColor(sf::Color(180, 180, 180));
+        continueText.setPosition(20.f, 550.f);
+        window.draw(continueText);
+    } else {
+        window.draw(choixText);
+    }
 }

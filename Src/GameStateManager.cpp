@@ -1,88 +1,63 @@
-
-//
-// GameStateManager.cpp
-//
-
 #include "../Inc/GameStateManager.h"
 
-GameStateManager::GameStateManager(Pokedex* pokedex)
-    : currentState(nullptr), pokedex(pokedex), indexCombattantActuel(0)
-{
+GameStateManager::GameStateManager(Pokedex* pokedex) : pokedex(pokedex) {
 }
 
 void GameStateManager::changeState(std::unique_ptr<GameState> newState) {
-    if (currentState) {
-        currentState->onExit();
-    }
+    nextState = std::move(newState);
+}
 
-    currentState = std::move(newState);
-
-    if (currentState) {
+void GameStateManager::applyPendingChange() {
+    if (nextState) {
+        if (currentState) currentState->onExit();
+        currentState = std::move(nextState);
         currentState->onEnter();
     }
 }
 
 void GameStateManager::handleEvent(const sf::Event& event) {
-    if (currentState) {
-        currentState->handleEvent(event);
-    }
+    if (currentState) currentState->handleEvent(event);
 }
 
 void GameStateManager::update(float deltaTime) {
-    if (currentState) {
-        currentState->update(deltaTime);
-    }
+    if (currentState) currentState->update(deltaTime);
 }
 
 void GameStateManager::render(sf::RenderWindow& window) {
-    if (currentState) {
-        currentState->render(window);
-    }
+    if (currentState) currentState->render(window);
 }
 
-Pokedex& GameStateManager::getPokedex() {
-    return *pokedex;
+bool GameStateManager::hasState() const {
+    return currentState != nullptr;
 }
 
-PokemonParty& GameStateManager::getParty() {
-    return party;
-}
-
-PokemonAttack& GameStateManager::getAttackTeam() {
-    return attackTeam;
-}
+Pokedex& GameStateManager::getPokedex() { return *pokedex; }
+PokemonParty& GameStateManager::getParty() { return party; }
+PokemonAttack& GameStateManager::getAttack() { return attack; }
 
 Pokemon* GameStateManager::getCombattantActuel() {
-    // Initialisation paresseuse : la première fois qu'on a besoin d'un
-    // combattant, on clone l'équipe d'attaque choisie par le joueur.
-    if (equipeVivante.empty() && attackTeam.getNombrePokemons() > 0) {
-        for (const auto& p : attackTeam.getPokemons()) {
-            equipeVivante.push_back(std::make_unique<Pokemon>(p));
+    for (size_t i = combattantIndex; i < attack.getNombrePokemons(); ++i) {
+        Pokemon* p = attack.getPokemonAt(i);
+        if (p && p->getPvActual() > 0) {
+            combattantIndex = i;
+            return p;
         }
-        indexCombattantActuel = 0;
     }
-
-    // Saute les Pokemon déjà K.O. pour trouver le prochain combattant valide
-    while (indexCombattantActuel < equipeVivante.size() &&
-           equipeVivante[indexCombattantActuel]->getPvActual() <= 0) {
-        ++indexCombattantActuel;
-    }
-
-    if (indexCombattantActuel >= equipeVivante.size()) {
-        return nullptr; // toute l'équipe est K.O.
-    }
-
-    return equipeVivante[indexCombattantActuel].get();
+    return nullptr;
 }
 
-bool GameStateManager::toutePartieVaincue() const {
-    if (equipeVivante.empty()) {
-        return false; // équipe pas encore engagée, pas de défaite à déclarer
-    }
-    for (const auto& p : equipeVivante) {
-        if (p->getPvActual() > 0) {
-            return false;
-        }
+void GameStateManager::combattantSuivant() {
+    combattantIndex++;
+}
+
+bool GameStateManager::toutePartieVaincue() {
+    for (size_t i = 0; i < attack.getNombrePokemons(); ++i) {
+        const Pokemon* p = attack.getPokemonAt(i);
+        if (p && p->getPvActual() > 0) return false;
     }
     return true;
+}
+
+void GameStateManager::resetCombatIndex() {
+    combattantIndex = 0;
 }
