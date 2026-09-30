@@ -15,8 +15,12 @@ private:
     sf::Texture sauvageTexture;
     sf::Sprite sauvageSprite;
 
+    sf::VertexArray background;   // degrade vertical
+    sf::CircleShape glow;         // halo doux derriere le pokemon
+
     bool resultatAffiche = false;
     std::string resultatMessage;
+    sf::Text resultText;
 
 public:
     explicit RencontreState(GameStateManager& manager);
