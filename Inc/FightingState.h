@@ -1,7 +1,3 @@
-//
-// Created by eya on 9/30/26.
-//
-
 #pragma once
 #include "GameState.h"
 #include "Pokemon_Party.h"
@@ -17,14 +13,21 @@ private:
 
     sf::Font font;
     sf::Text titleText;
+
+    sf::VertexArray background;
+
     sf::RectangleShape fightButton;
     sf::Text fightButtonText;
+    sf::Color buttonColorNormal;
+    sf::Color buttonColorHover;
 
     std::vector<sf::Texture> candidateTextures;
     std::vector<sf::Sprite> candidateSprites;
     std::vector<sf::Text> candidateLabels;
+    std::vector<sf::CircleShape> candidateBackPlates;
 
     void rebuildDisplay();
+    bool isMouseOverButton(const sf::Vector2f& mousePos) const;
 
 public:
     explicit FightingState(GameStateManager& manager);
