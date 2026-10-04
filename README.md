@@ -47,8 +47,8 @@ Le projet suit une architecture orientée objet avec :
 
 - Un compilateur C++ supportant le standard **C++17** (MinGW / MSVC via Visual Studio)
 - **CMake** ≥ 3.21
-- **SFML** (graphics, window, system, audio)
-- **CLion** ou **Visual Studio** (recommandés sous Windows)
+- **SFML** (graphics, window, system)
+- **CLion** ou **Visual Studio** 
 
 ## 📥 Installation
 
@@ -64,32 +64,57 @@ cd Tp1_Pokemon
 
 ## 📁 Structure du projet
 
-```
+```text
 Tp1_Pokemon/
 │
 ├── 📄 CMakeLists.txt
 ├── 📄 README.md
-├── 🗜️ image_pokedex-20260914.zip
+│
+├── 📂 data/
+│   ├── 📂 image_pokedex-20260914/
+│   │   └── 📂 pokemon/
+│   │       └── 🖼️ Images des Pokémon
+│   │
+│   ├── 📄 pokedex.csv
+│   ├── 🖼️ EXPLORATION.png
+│   ├── 🖼️ healthGauge.png
+│   ├── 🖼️ pokemoncapture.png
+│   ├── 🖼️ versusSmall.png
+│   └── 🔤 PressStart2P-Regular.ttf
 │
 ├── 📂 Inc/
-│   ├── 📝 Pokemon.hpp
-│   ├── 📝 Pokemon_Vector.hpp
-│   ├── 📝 Pokedex.hpp
-│   ├── 📝 Pokemon_Party.hpp
-│   └── 📝 Pokemon_Attack.hpp
+│   ├── AccueilState.h
+│   ├── CombatState.h
+│   ├── FightingState.h
+│   ├── GameOverState.h
+│   ├── GameState.h
+│   ├── GameStateManager.h
+│   ├── Pokedex.h
+│   ├── Pokemon.h
+│   ├── Pokemon_Attack.h
+│   ├── Pokemon_Party.h
+│   ├── PokemonAssets.h
+│   ├── PokemonVector.h
+│   ├── RandomState.h
+│   └── RencontreState.h
 │
-├── 📂 Src/
-│   ├── 🧩 main.cpp
-│   ├── 🧩 Pokemon.cpp
-│   ├── 🧩 Pokedex.cpp
-│   ├── 🧩 Pokemon_Party.cpp
-│   └── 🧩 Pokemon_Attack.cpp
-│
-└── 📂 image_pokedex-20260914/
-    └── 📂 pokemon/
-        ├── 🖼️ (images des Pokémon)
-        └── 📊 Pokedex.csv
-```
+└── 📂 Src/
+    ├── main.cpp
+    ├── AccueilState.cpp
+    ├── CombatState.cpp
+    ├── FightingState.cpp
+    ├── GameOverState.cpp
+    ├── GameState.cpp
+    ├── GameStateManager.cpp
+    ├── Pokedex.cpp
+    ├── Pokemon.cpp
+    ├── Pokemon_Attack.cpp
+    ├── Pokemon_Party.cpp
+    ├── PokemonAssets.cpp
+    ├── PokemonVector.cpp
+    ├── RandomState.cpp
+    └── RencontreState.cpp
+
 
 ## 👤 Auteurs
 
