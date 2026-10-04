@@ -30,7 +30,7 @@ void AccueilState::onEnter() {
     subtitleText.setOrigin(subBounds.width / 2.f, subBounds.height / 2.f);
     subtitleText.setPosition(400.f, 220.f);
 
-    // Décor : deux cercles style pokeball en fond
+
     decorCircleTop.setRadius(180.f);
     decorCircleTop.setFillColor(sf::Color(200, 30, 30));
     decorCircleTop.setOrigin(180.f, 180.f);

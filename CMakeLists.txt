@@ -20,16 +20,12 @@ add_executable(Tp1
         Inc/Pokemon_Party.h
         Src/Pokemon_Attack.cpp
         Inc/Pokemon_Attack.h
-        Src/SelectionState.cpp
-        Inc/SelectionState.h
         Src/GameState.cpp
         Inc/GameState.h
         Src/GameStateManager.cpp
         Inc/GameStateManager.h
         Src/AccueilState.cpp
         Inc/AccueilState.h
-        Src/ExplorationState.cpp
-        Inc/ExplorationState.h
         Src/RencontreState.cpp
         Inc/RencontreState.h
         Src/CombatState.cpp

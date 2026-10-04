@@ -12,13 +12,31 @@ void GameOverState::onEnter() {
     gameOverText.setString("GAME OVER");
     gameOverText.setCharacterSize(48);
     gameOverText.setFillColor(sf::Color::Red);
-    gameOverText.setPosition(250.f, 200.f);
+
+    sf::FloatRect gb = gameOverText.getLocalBounds();
+
+    gameOverText.setOrigin(
+        gb.left + gb.width / 2.f,
+        gb.top + gb.height / 2.f
+    );
+
+    gameOverText.setPosition(400.f, 250.f);
+
 
     instructionText.setFont(font);
     instructionText.setString("Appuyez sur une touche pour recommencer");
-    instructionText.setCharacterSize(20);
+    instructionText.setCharacterSize(12);
     instructionText.setFillColor(sf::Color::White);
-    instructionText.setPosition(200.f, 300.f);
+
+    sf::FloatRect ib = instructionText.getLocalBounds();
+
+    instructionText.setOrigin(
+        ib.left + ib.width / 2.f,
+        ib.top + ib.height / 2.f
+    );
+
+    instructionText.setPosition(400.f, 350.f);
+
 }
 
 void GameOverState::handleEvent(const sf::Event& event) {

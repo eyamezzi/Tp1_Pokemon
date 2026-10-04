@@ -23,7 +23,6 @@ void RandomState::onEnter() {
     if (backgroundTexture.loadFromFile("data/EXPLORATION.png")) {
         backgroundSprite.setTexture(backgroundTexture);
 
-        // Redimensionne l'image pour qu'elle remplisse exactement la fenêtre 800x600
         sf::Vector2u textureSize = backgroundTexture.getSize();
         backgroundSprite.setScale(
             800.f / static_cast<float>(textureSize.x),

@@ -12,16 +12,16 @@ public:
     explicit GameState(GameStateManager& manager);
     virtual ~GameState() = default;
 
-    // Appelée une fois à l'entrée dans l'état (ex: charger textures, réinitialiser sélection)
+    // Appelée une fois à l'entrée dans l'état
     virtual void onEnter() {}
 
-    // Appelée une fois à la sortie de l'état (ex: libérer ressources spécifiques)
+    // Appelée une fois à la sortie de l'état
     virtual void onExit() {}
 
-    // Gestion des événements SFML (clic, touche...)
+    // Gestion des événements SFML
     virtual void handleEvent(const sf::Event& event) = 0;
 
-    // Mise à jour logique (déplacements, timers, IA...)
+    // Mise à jour logique
     virtual void update(float deltaTime) = 0;
 
     // Dessin à l'écran

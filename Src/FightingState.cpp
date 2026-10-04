@@ -11,7 +11,7 @@ FightingState::FightingState(GameStateManager& manager)
 void FightingState::onEnter() {
     font.loadFromFile("data/PressStart2P-Regular.ttf");
 
-    // Degrade de fond, identique a RencontreState
+
     background.setPrimitiveType(sf::Quads);
     background.resize(4);
     sf::Color topColor(20, 25, 50);
@@ -81,7 +81,7 @@ void FightingState::rebuildDisplay() {
         auto it = std::find(selectedOrder.begin(), selectedOrder.end(), numero);
         bool isSelected = (it != selectedOrder.end());
 
-        // Plateau circulaire derriere le sprite, rouge si selectionne, sombre sinon
+      
         sf::CircleShape plate(50.f);
         plate.setOrigin(50.f, 50.f);
         plate.setPosition(cx, cy);
